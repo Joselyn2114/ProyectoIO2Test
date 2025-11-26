@@ -1,0 +1,5 @@
+# Modelo A: ResNet-18 entrenada desde cero para clasificación de anomalías.
+_target_: src.models.resnet_scratch.ResNetScratchModule
+num_classes: 2
+pretrained: false
+embedding_dim: 512

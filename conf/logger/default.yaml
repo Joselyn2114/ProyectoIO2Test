@@ -1,0 +1,4 @@
+# Logger sencillo usando CSVLogger para ejecuciones reproducibles en Colab.
+_target_: pytorch_lightning.loggers.CSVLogger
+save_dir: ./logs
+name: mvtec
