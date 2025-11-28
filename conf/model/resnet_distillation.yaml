@@ -1,8 +1,0 @@
-# Modelo B: Esquema teacher-student con distillation.
-_target_: src.models.resnet_distillation.ResNetDistillationModule
-num_classes: 2
-teacher_pretrained: true
-student_width: 0.5
-alpha: 0.5
-temperature: 4.0
-embedding_dim: 256
