@@ -1,0 +1,80 @@
+# Configuración raíz de Hydra para el proyecto de detección de anomalías MVTec AD
+# Esta configuración permite seleccionar el modelo, entrenador y logger
+# cumpliendo con el enunciado del proyecto universitario.
+
+defaults:
+  - model: resnet_scratch
+  - trainer: default
+  - logger: default
+
+# Ruta base del dataset MVTec AD en el entorno local o de Google Colab.
+data:
+  root: /content/drive/MyDrive/Colab Notebooks/ProyectoIA_02/src/data/mvtec
+  categories:
+    - bottle
+    - cable
+    - capsule
+    - grid
+    - metal_nut
+    - pill
+    - screw
+    - toothbrush
+    - transistor
+    - zipper
+  num_workers: 2
+  batch_size: 8
+
+  train_transforms:
+    _target_: torchvision.transforms.Compose
+    transforms:
+      # 1) Aumentamos tamaño base y usamos recorte aleatorio
+      - _target_: torchvision.transforms.Resize
+        size: [160, 160]
+      - _target_: torchvision.transforms.CenterCrop
+        size: [128, 128]
+
+      # 2) Aumentos ligeros para mejorar generalización
+      - _target_: torchvision.transforms.RandomHorizontalFlip
+      
+      - _target_: torchvision.transforms.ToTensor
+
+      # 3) Normalización estándar de ImageNet (ResNet-18 lo agradece)
+      - _target_: torchvision.transforms.Normalize
+        mean: [0.485, 0.456, 0.406]
+        std:  [0.229, 0.224, 0.225]
+
+  test_transforms:
+    _target_: torchvision.transforms.Compose
+    transforms:
+      - _target_: torchvision.transforms.Resize
+        size: [160, 160]
+      - _target_: torchvision.transforms.CenterCrop
+        size: [128, 128]
+      - _target_: torchvision.transforms.ToTensor
+      - _target_: torchvision.transforms.Normalize
+        mean: [0.485, 0.456, 0.406]
+        std:  [0.229, 0.224, 0.225]
+
+# Parámetros generales de optimización
+optim:
+  # El learning rate para entrenar más fino ó sino que aprenda mas rapido
+  lr: 5e-4
+  # Weight decay más suave para no penalizar tanto los pesos
+  weight_decay: 1e-5
+
+# Parámetros de embebidos y evaluación
+embeddings:
+  size: 256
+  pca_components: 30
+  tsne_perplexity: 30
+  tsne_components: 2
+  dbscan:
+    eps: 0.5
+    min_samples: 5
+
+# Hiperparámetros comunes del early stopping
+early_stopping:
+  monitor: val_loss
+  mode: min
+  patience: 4        # antes 10 → se detiene antes si no mejora
+  min_delta: 0.005   # exige una mejora un poquito más visible
